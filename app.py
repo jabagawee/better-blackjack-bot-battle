@@ -22,8 +22,10 @@ valid_chars = "abcdefghijklmnopqrstuvwxyz0123456789"
 
 
 # TODO: change into just /api/register with params username and password
+# TODO: turn this into json
 @app.route('/api/register/<username>')
 def register(username):
+    return 'under construction'
     # TODO: add a simple IP address checker to make sure 2 min have passed
     existing_token = auth_collection.find_one({'username': username})
     if existing_token:
