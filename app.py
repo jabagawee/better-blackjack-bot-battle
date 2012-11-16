@@ -1,13 +1,19 @@
 #! /usr/bin/env python
 
 import os
+
+import pymongo
 from flask import Flask
+
+connection = pymongo.Connection(host=os.environ['MONGOLAB_URI'])
+db = connection[os.environ['MONGOLAB_DATABASE']]
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def hello():
-    return "Hello World"
+    return "Hello World, %s, %s" % (connection, db)
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
