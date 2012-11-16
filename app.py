@@ -21,17 +21,19 @@ def root():
 valid_chars = "abcdefghijklmnopqrstuvwxyz0123456789"
 
 
+# TODO: change into just /api/register with params username and password
 @app.route('/api/register/<username>')
 def register(username):
-    entry = auth_collection.find_one({'username': username})
-    if entry:
-        return 'Already registered. Your token is %s' % (entry['token'])
+    # TODO: add a simple IP address checker to make sure 2 min have passed
+    existing_token = auth_collection.find_one({'username': username})
+    if existing_token:
+        return 'Already registered. Your token is %s.' % (existing_token['token'])
     token = ''.join(random.choice(valid_chars) for __ in xrange(25))
     auth = {'username': username,
             'token': token,
             'created_time': datetime.datetime.utcnow()}
     auth_collection.insert(auth)
-    return "Registered. Your token is %s" % (token)
+    return "Registered. Your token is %s." % (token)
 
 
 if __name__ == "__main__":
