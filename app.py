@@ -5,7 +5,8 @@ import os
 import random
 
 import pymongo
-from flask import Flask
+from flask import Flask, jsonify, request
+from werkzeug.security import generate_password_hash, check_password_hash
 
 connection = pymongo.Connection(host=os.environ['MONGOLAB_URI'])
 db = connection[os.environ['MONGOLAB_DATABASE']]
@@ -18,24 +19,34 @@ app = Flask(__name__)
 def root():
     return "Hello World"
 
-valid_chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+
+def generate_apikey():
+    valid_chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+    return ''.join(random.choice(valid_chars for __ in xrange(25)))
 
 
-# TODO: change into just /api/register with params username and password
-# TODO: turn this into json
-@app.route('/api/register/<username>')
-def register(username):
-    return 'under construction'
-    # TODO: add a simple IP address checker to make sure 2 min have passed
-    existing_token = auth_collection.find_one({'username': username})
-    if existing_token:
-        return 'Already registered. Your token is %s.' % (existing_token['token'])
-    token = ''.join(random.choice(valid_chars) for __ in xrange(25))
-    auth = {'username': username,
-            'token': token,
-            'created_time': datetime.datetime.utcnow()}
-    auth_collection.insert(auth)
-    return "Registered. Your token is %s." % (token)
+@app.route('/api/get_apikey')
+def get_apikey():
+    if 'username' not in request.args or 'password' not in request.args:
+        return jsonify({'success': False,
+                        'error': 'Missing username or password.'})
+
+    username, password = request.args['username'], request.args['password']
+
+    # check if user was already here
+    document = auth_collection.find_one({'username': username})
+    if document:
+        if check_password_hash(document['pass_hash'], password):
+            return jsonify({'success': True, 'apikey': document['apikey']})
+        return jsonify({'success': False, 'error': 'Incorrect password.'})
+
+    apikey = generate_apikey()
+    document = {'username': username,
+                'pass_hash': generate_password_hash(password),
+                'apikey': apikey,
+                'created_time': datetime.datetime.utcnow()}
+    auth_collection.insert(document)
+    return jsonify({'success': True, 'apikey': apikey})
 
 
 if __name__ == "__main__":
