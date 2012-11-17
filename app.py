@@ -65,7 +65,8 @@ def get_apikey():
                 'apikey': apikey,
                 'created_time': datetime.datetime.utcnow(),
                 'cash': 5000,
-                'in_game': False}
+                'in_game': False,
+                'games_played': 0}
     auth_collection.insert(document)
     return jsonify({'success': True, 'apikey': apikey})
 
