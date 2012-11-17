@@ -44,7 +44,7 @@ def generate_apikey():
     return ''.join(random.choice(valid_chars) for __ in xrange(25))
 
 
-@app.route('/api/keys/get')
+@app.route('/api/key/get')
 def get_apikey():
     if 'username' not in request.args or 'password' not in request.args:
         return jsonify({'success': False,
@@ -83,7 +83,7 @@ def valid_apikey_required(view):
     return decorated_view
 
 
-@app.route('/api/keys/check')
+@app.route('/api/key/check')
 @valid_apikey_required
 def check_apikey():
     document = auth_collection.find_one({'apikey', request.args['apikey']})
