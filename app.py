@@ -5,8 +5,10 @@ import os
 import random
 
 import pymongo
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
+
+import documentation
 
 connection = pymongo.Connection(host=os.environ['MONGOLAB_URI'])
 db = connection[os.environ['MONGOLAB_DATABASE']]
@@ -53,6 +55,7 @@ def get_apikey():
                 'created_time': datetime.datetime.utcnow()}
     auth_collection.insert(document)
     return jsonify({'success': True, 'apikey': apikey})
+
 
 
 if __name__ == "__main__":
