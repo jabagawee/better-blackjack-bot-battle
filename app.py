@@ -76,7 +76,7 @@ def valid_apikey_required(view):
         if 'apikey' not in request.args:
             return jsonify({'success': False, 'error': 'No apikey found.'})
         apikey = request.args['apikey']
-        document = auth_collection.find_one({'apikey', apikey})
+        document = auth_collection.find_one({'apikey': apikey})
         if document:
             return view(*args, **kwargs)
         return jsonify({'success': False, 'error': 'Invalid apikey.'})
@@ -86,7 +86,7 @@ def valid_apikey_required(view):
 @app.route('/api/key/check')
 @valid_apikey_required
 def check_apikey():
-    document = auth_collection.find_one({'apikey', request.args['apikey']})
+    document = auth_collection.find_one({'apikey': request.args['apikey']})
     return jsonify({'success': True,
                     'username': document['username'],
                     'cash': document['cash'],
