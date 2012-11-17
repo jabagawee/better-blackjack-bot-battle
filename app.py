@@ -22,7 +22,7 @@ def root():
 
 def generate_apikey():
     valid_chars = "abcdefghijklmnopqrstuvwxyz0123456789"
-    return ''.join(random.choice(valid_chars for __ in xrange(25)))
+    return ''.join(random.choice(valid_chars) for __ in xrange(25))
 
 
 @app.route('/api/get_apikey')
