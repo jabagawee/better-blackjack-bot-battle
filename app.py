@@ -17,7 +17,13 @@ app = Flask(__name__)
 
 @app.route('/')
 def root():
-    return "Hello World"
+    if 'apikey' in request.args:
+        apikey = request.args['apikey']
+        document = auth_collection.find_one({'apikey': apikey})
+        username = document['username']
+    else:
+        username = "Anonymous"
+    return "Hello, %s." % (username)
 
 
 def generate_apikey():
